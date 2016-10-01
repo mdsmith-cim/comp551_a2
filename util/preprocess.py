@@ -7,10 +7,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 class preprocess:
 
-    def __init__(self, process):
-
-        self.process = process
-
     def get_data_raw(self, train_in = 'data/train_in.csv', train_out = 'data/train_out.csv', test_in = 'data/test_in.csv'):
 
         train = pd. read_csv(train_in)
