@@ -1,6 +1,7 @@
 import numpy as np
 from util.preprocess import preprocess
 
+# Set path to data here if desired
 pp = preprocess()
 
 # Raw data
