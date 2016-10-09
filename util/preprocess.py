@@ -26,13 +26,14 @@ class preprocess:
 
     def get_data_raw(self, ):
 
-        train = pd. read_csv(self.train_in)
+        train = pd.read_csv(self.train_in)
         train_y = pd.read_csv(self.train_out)
         test = pd.read_csv(self.test_in)
 
-        X_train = train['abstract'].values
+        # Note: we only get data for those with a category not equal to the string 'category'
+        X_train = train['abstract'].ix[train_y['category'] != 'category'].values
         X_test = test['abstract'].values
-        y_train = train_y['category'].values
+        y_train = train_y['category'].ix[train_y['category'] != 'category'].values
 
         return X_train, y_train, X_test
 
