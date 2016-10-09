@@ -123,6 +123,8 @@ class preprocess:
                 except FileExistsError:
                     pass
 
+        print("Processing...this may take a while")
+
         if use_spacy:
 
             X_train, y_train, X_test = self.get_data_raw()
@@ -184,6 +186,8 @@ class preprocess:
                 # do nothing if it already exists
                 except FileExistsError:
                     pass
+
+        print("Processing...this may take a while")
 
         X_train, y_train, X_test = self.get_data_raw()
 
