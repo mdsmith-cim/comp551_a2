@@ -89,3 +89,5 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# COMP 551 A2: don't include saved processed data
+nlp_processed/
