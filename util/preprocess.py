@@ -51,7 +51,6 @@ class preprocess:
 
         return X_train, y_train, X_test
 
-
     def convert_string_category_to_num(self, y):
 
         ser = pd.Series(y)
@@ -68,7 +67,6 @@ class preprocess:
             raise Exception('Please convert strings to categories first')
 
         return np.array(self.uniques[y])
-
 
     def get_data_no_stop_words(self):
 
@@ -160,7 +158,6 @@ class preprocess:
 
         return X_train, y_train, X_test
 
-
     # Note: takes same arguments as get_bagofwords
     def get_tf_idf(self, *args, **kwargs):
         X_train, y_train, X_test = self.get_bagofwords(*args, **kwargs)
@@ -170,7 +167,6 @@ class preprocess:
         X_test = tfidf_transformer.fit_transform(X_test)
 
         return X_train, y_train, X_test
-
 
     def get_data_nlp(self, use_disk=True, data_directory='nlp_processed/', clean=False):
 
