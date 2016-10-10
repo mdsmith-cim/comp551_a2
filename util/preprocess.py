@@ -103,13 +103,14 @@ class preprocess:
                 loaded = np.load(file)
 
                 if 'X_train' not in loaded.files or 'X_test' not in loaded.files or 'y_train' not in loaded.files \
-                        or 'use_spacy' not in loaded.files:
+                        or 'use_spacy' not in loaded.files or 'max_features' not in loaded.files:
                     file.close()
                     raise Exception('Saved data is corrupted')
 
                 sp = loaded['use_spacy']
+                max_feat = loaded['max_features']
 
-                if sp != use_spacy:
+                if sp != use_spacy or max_feat != max_features:
                     file.close()
                     raise Exception('Bag of words was calculated using different parameters; not loading data')
 
@@ -152,7 +153,8 @@ class preprocess:
 
         if use_disk:
             file = open(filename, 'wb')
-            np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train, use_spacy=use_spacy)
+            np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train, use_spacy=use_spacy,
+                                max_features=max_features)
             print("Saved data to " + filename)
             file.close()
 
