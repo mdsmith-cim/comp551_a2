@@ -22,11 +22,16 @@ pp = preprocess()
 #X_train, y_train, X_test = pp.get_bagofwords(max_features=5000, use_spacy=False)
 
 # If you want bag of words based on the root of words from spacy natural language processing
-X_train, y_train, X_test = pp.get_bagofwords(max_features=5000, use_spacy=True)
+#X_train, y_train, X_test = pp.get_bagofwords(max_features=5000, use_spacy=True)
 
 
 # If you want data processed with spacy but not yet run through bag of words:
 #X_train, y_train, X_test = pp.get_data_nlp()
+
+# tf-idf is available
+# Note: all arguments are passed directly to get_bagofwords
+X_train, y_train, X_test = pp.get_tf_idf(max_features=5000, use_spacy=True)
+
 
 # Remove pp object to save memory
 # having spacy in memory consumes ~1.7GB

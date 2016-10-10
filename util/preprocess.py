@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
+from sklearn.feature_extraction.text import TfidfTransformer
 from nltk.corpus import stopwords
 import numpy as np
 import spacy
@@ -87,7 +88,8 @@ class preprocess:
 
         return X_train, y_train, X_test
 
-    def get_bagofwords(self, max_features=5000, data_directory='nlp_processed/', clean=False, use_disk=True, use_spacy=True):
+    def get_bagofwords(self, max_features=5000, data_directory='nlp_processed/', clean=False, use_disk=True,
+                       use_spacy=True):
 
         filename = os.path.join(data_directory, 'data_bow.dat')
 
@@ -100,12 +102,19 @@ class preprocess:
                 file = open(filename, 'rb')
                 loaded = np.load(file)
 
-                if 'X_train' not in loaded.files or 'X_test' not in loaded.files or 'y_train' not in loaded.files:
+                if 'X_train' not in loaded.files or 'X_test' not in loaded.files or 'y_train' not in loaded.files \
+                        or 'use_spacy' not in loaded.files:
                     file.close()
                     raise Exception('Saved data is corrupted')
 
-                X_train = loaded['X_train']
-                X_test = loaded['X_test']
+                sp = loaded['use_spacy']
+
+                if sp != use_spacy:
+                    file.close()
+                    raise Exception('Bag of words was calculated using different parameters; not loading data')
+
+                X_train = loaded['X_train'][()]
+                X_test = loaded['X_test'][()]
                 y_train = loaded['y_train']
 
                 file.close()
@@ -126,7 +135,6 @@ class preprocess:
         print("Processing...this may take a while")
 
         if use_spacy:
-
             X_train, y_train, X_test = self.get_data_raw()
             # Bag of words: run on preprocessed data
             vectorizer = CountVectorizer(analyzer="word", strip_accents="unicode", tokenizer=self.process_spacy_sample,
@@ -144,11 +152,23 @@ class preprocess:
 
         if use_disk:
             file = open(filename, 'wb')
-            np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train)
+            np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train, use_spacy=use_spacy)
             print("Saved data to " + filename)
             file.close()
 
         return X_train, y_train, X_test
+
+
+    # Note: takes same arguments as get_bagofwords
+    def get_tf_idf(self, *args, **kwargs):
+        X_train, y_train, X_test = self.get_bagofwords(*args, **kwargs)
+
+        tfidf_transformer = TfidfTransformer()
+        X_train = tfidf_transformer.fit_transform(X_train)
+        X_test = tfidf_transformer.fit_transform(X_test)
+
+        return X_train, y_train, X_test
+
 
     def get_data_nlp(self, use_disk=True, data_directory='nlp_processed/', clean=False):
 
@@ -190,9 +210,6 @@ class preprocess:
         print("Processing...this may take a while")
 
         X_train, y_train, X_test = self.get_data_raw()
-
-        # If you dont' have this, follow this guide
-        # https://spacy.io/docs/#getting-started
 
         X_train = np.array(self.process_spacy(X_train))
         X_test = np.array(self.process_spacy(X_test))
