@@ -1,5 +1,6 @@
 import numpy as np
 from util.preprocess import preprocess
+from sk_impl import svm
 
 # Set path to data here if desired
 pp = preprocess()
@@ -38,4 +39,6 @@ X_train, y_train, X_test = pp.get_tf_idf(max_features=5000, use_spacy=True)
 del(pp)
 
 # Do stuff with data...
+
+classifier = svm(X_train, y_train)
 
