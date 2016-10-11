@@ -1,6 +1,7 @@
 import numpy as np
 from util.preprocess import preprocess
 from sk_impl import svm
+from util.export import export
 
 # Set path to data here if desired
 pp = preprocess()
@@ -42,3 +43,6 @@ del(pp)
 
 classifier = svm(X_train, y_train)
 
+prediction = classifier.predict(X_test)
+
+export(prediction)
