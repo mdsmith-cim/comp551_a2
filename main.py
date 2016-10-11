@@ -1,7 +1,9 @@
 import numpy as np
 from util.preprocess import preprocess
-from sk_impl import svm
+from sk_impl import grid_search_cv
 from util.export import export
+from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 
 # Set path to data here if desired
 pp = preprocess()
@@ -37,12 +39,11 @@ X_train, y_train, X_test = pp.get_tf_idf(max_features=5000, use_spacy=True)
 
 # Remove pp object to save memory
 # having spacy in memory consumes ~1.7GB
-del(pp)
 
 # Do stuff with data...
 
-classifier = svm(X_train, y_train)
+classifier = grid_search_cv(X_train, y_train, parameters={}, classifier=LinearSVC(verbose=10, class_weight='balanced'))
 
 prediction = classifier.predict(X_test)
 
-export(prediction)
+export(pp.convert_num_category_to_string(prediction))

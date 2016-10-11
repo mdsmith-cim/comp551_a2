@@ -7,7 +7,7 @@ from sklearn.metrics import classification_report
 # and http://scikit-learn.org/stable/auto_examples/model_selection/grid_search_digits.html#sphx-glr-auto-examples-model-selection-grid-search-digits-py
 
 # This svm approach uses nested cross validation to avoid having the validation set leak into the results
-def svm(X_train, y_train, test_size=0.3, parameters=None):
+def grid_search_cv(X_train, y_train, test_size=0.3, parameters=None, classifier=SVC()):
 
     if parameters is None:
         parameters = {'kernel': ['rbf', 'linear', 'poly', 'sigmoid'], 'gamma': ['auto'],
@@ -17,7 +17,7 @@ def svm(X_train, y_train, test_size=0.3, parameters=None):
     X_t, X_v, y_t, y_v = train_test_split(X_train, y_train, test_size=test_size)
 
     # Non_nested parameter search and scoring
-    clf = GridSearchCV(estimator=SVC(), param_grid=parameters, cv=4, n_jobs=-1, verbose = 10)
+    clf = GridSearchCV(estimator=classifier, param_grid=parameters, cv=3, n_jobs=-1, verbose = 10)
     clf.fit(X_t, y_t)
 
     print("Best parameters set found on development set:\n")

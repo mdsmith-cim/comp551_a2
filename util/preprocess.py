@@ -147,7 +147,7 @@ class preprocess:
                                          max_features=max_features)
 
         X_train = vectorizer.fit_transform(X_train)
-        X_test = vectorizer.fit_transform(X_test)
+        X_test = vectorizer.transform(X_test)
 
         y_train = self.convert_string_category_to_num(y_train)
 
@@ -166,7 +166,7 @@ class preprocess:
 
         tfidf_transformer = TfidfTransformer()
         X_train = tfidf_transformer.fit_transform(X_train)
-        X_test = tfidf_transformer.fit_transform(X_test)
+        X_test = tfidf_transformer.transform(X_test)
 
         return X_train, y_train, X_test
 
