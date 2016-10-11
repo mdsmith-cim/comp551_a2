@@ -101,7 +101,8 @@ class preprocess:
                 loaded = np.load(file)
 
                 if 'X_train' not in loaded.files or 'X_test' not in loaded.files or 'y_train' not in loaded.files \
-                        or 'use_spacy' not in loaded.files or 'max_features' not in loaded.files:
+                        or 'use_spacy' not in loaded.files or 'max_features' not in loaded.files or \
+                        'uniques' not in loaded.files:
                     file.close()
                     raise Exception('Saved data is corrupted')
 
@@ -115,6 +116,7 @@ class preprocess:
                 X_train = loaded['X_train'][()]
                 X_test = loaded['X_test'][()]
                 y_train = loaded['y_train']
+                self.uniques = loaded['uniques']
 
                 file.close()
 
@@ -152,7 +154,7 @@ class preprocess:
         if use_disk:
             file = open(filename, 'wb')
             np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train, use_spacy=use_spacy,
-                                max_features=max_features)
+                                max_features=max_features, uniques=self.uniques)
             print("Saved data to " + filename)
             file.close()
 
@@ -182,13 +184,15 @@ class preprocess:
                 file = open(filename, 'rb')
                 loaded = np.load(file)
 
-                if 'X_train' not in loaded.files or 'X_test' not in loaded.files or 'y_train' not in loaded.files:
+                if 'X_train' not in loaded.files or 'X_test' not in loaded.files or 'y_train' not in loaded.files \
+                        or 'uniques' not in loaded.files:
                     file.close()
                     raise Exception('Saved data is corrupted')
 
                 X_train = loaded['X_train']
                 X_test = loaded['X_test']
                 y_train = loaded['y_train']
+                self.uniques = loaded['uniques']
 
                 file.close()
 
@@ -216,7 +220,7 @@ class preprocess:
 
         if use_disk:
             file = open(filename, 'wb')
-            np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train)
+            np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train, uniques=self.uniques)
             print("Saved data to " + filename)
             file.close()
 
