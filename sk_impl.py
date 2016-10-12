@@ -26,6 +26,6 @@ def grid_search_cv(X_train, y_train, test_size=0.3, parameters=None, classifier=
     print(classification_report(y_true, y_pred))
     print()
 
-    print("Classification accuracy: {1}\n".format(clf.score(X_v, y_v)))
+    print("Classification accuracy: {0}".format(clf.score(X_v, y_v)))
 
     return clf
