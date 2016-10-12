@@ -52,6 +52,6 @@ classifierRandF = grid_search_cv(X_train, y_train, parameters={'n_estimators': [
                                  classifier=RandomForestClassifier(n_jobs=-1, verbose=10,
                                                                    class_weight='balanced'))
 
-#prediction = classifier.predict(X_test)
+prediction = classifierLin.predict(X_test)
 
-#export(pp.convert_num_category_to_string(prediction))
+export(pp.convert_num_category_to_string(prediction), 'linearSVM.csv')
