@@ -4,6 +4,7 @@ from sk_impl import grid_search_cv
 from util.export import export
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 
 # Set path to data here if desired
 pp = preprocess()
@@ -44,13 +45,26 @@ X_train, y_train, X_test = pp.get_tf_idf(max_features=10000, use_spacy=True)
 
 classifierLin = grid_search_cv(X_train, y_train, parameters={'C': [0.01, 0.1, 1, 10, 100],
                                                              'loss': ['hinge', 'squared_hinge'],
-                                                             'tol': [1e-6, 1e-5, 1e-4, 1e-3]},
-                               classifier=LinearSVC(verbose=10, class_weight='balanced', max_iter=10000))
+                                                             'tol': [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3]},
+                               classifier=LinearSVC(verbose=10, class_weight='balanced', max_iter=50000))
 
 classifierRandF = grid_search_cv(X_train, y_train, parameters={'n_estimators': [5, 10, 15, 20, 25, 30],
                                                                'criterion': ['gini', 'entropy']},
                                  classifier=RandomForestClassifier(n_jobs=-1, verbose=10,
                                                                    class_weight='balanced'))
+
+classifierSVM = grid_search_cv(X_train, y_train, parameters=[{'kernel': ['rbf'],
+                                                              'C': [0.01, 0.1, 1, 10, 100],
+                                                              'tol':[1e-5, 1e-4, 1e-3, 1e-2, 1e-1]},
+                                                             {'kernel': ['poly'], 'C':
+                                                                 [0.01, 0.1, 1,10, 100],
+                                                              'tol':[1e-5, 1e-4, 1e-3, 1e-2, 1e-1],
+                                                              'degree':[2, 3, 4]},
+                                                             {'kernel': ['sigmoid'],
+                                                              'C': [0.01, 0.1, 1, 10, 100],
+                                                              'tol':[1e-5, 1e-4, 1e-3, 1e-2, 1e-1]}],
+                               classifier=SVC(cache_size=4096, class_weight='balanced',
+                                              verbose=True, decision_function_shape='ovr', max_iter=500000))
 
 prediction = classifierLin.predict(X_test)
 
