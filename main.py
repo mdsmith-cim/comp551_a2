@@ -3,7 +3,7 @@ from util.preprocess import preprocess
 from sk_impl import grid_search_cv
 from util.export import export
 from sklearn.svm import LinearSVC
-from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
 
 # Set path to data here if desired
 pp = preprocess()
@@ -34,7 +34,7 @@ pp = preprocess()
 
 # tf-idf is available
 # Note: all arguments are passed directly to get_bagofwords
-X_train, y_train, X_test = pp.get_tf_idf(max_features=5000, use_spacy=True)
+X_train, y_train, X_test = pp.get_tf_idf(max_features=10000, use_spacy=True)
 
 
 # Remove pp object to save memory
@@ -42,8 +42,16 @@ X_train, y_train, X_test = pp.get_tf_idf(max_features=5000, use_spacy=True)
 
 # Do stuff with data...
 
-classifier = grid_search_cv(X_train, y_train, parameters={}, classifier=LinearSVC(verbose=10, class_weight='balanced'))
+classifierLin = grid_search_cv(X_train, y_train, parameters={'C': [0.01, 0.1, 1, 10, 100],
+                                                             'loss': ['hinge', 'squared_hinge'],
+                                                             'tol': [1e-6, 1e-5, 1e-4, 1e-3]},
+                               classifier=LinearSVC(verbose=10, class_weight='balanced', max_iter=10000))
 
-prediction = classifier.predict(X_test)
+classifierRandF = grid_search_cv(X_train, y_train, parameters={'n_estimators': [5, 10, 15, 20, 25, 30],
+                                                               'criterion': ['gini', 'entropy']},
+                                 classifier=RandomForestClassifier(n_jobs=-1, verbose=10,
+                                                                   class_weight='balanced'))
 
-export(pp.convert_num_category_to_string(prediction))
+#prediction = classifier.predict(X_test)
+
+#export(pp.convert_num_category_to_string(prediction))
