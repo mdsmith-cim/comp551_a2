@@ -262,14 +262,10 @@ class preprocess:
 
         parsed = lemmas
 
-        ### TEMP: for test against roman's word list
-        roman_list = open('1-1000.txt','rt').read().split()
-
         # Remove all stop words and other undesirables
         # also make sure not an empty string
         parsed = [token for token in parsed if
-                  #(token not in self.STOP_WORDS_PLUS_EXTRA and len(token) != 0)]
-                  (token not in self.STOP_WORDS_PLUS_EXTRA and len(token) != 0 and token not in roman_list)]
+                  (token not in self.STOP_WORDS_PLUS_EXTRA and len(token) != 0)]
 
         return parsed
 
