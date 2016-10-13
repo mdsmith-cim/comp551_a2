@@ -87,7 +87,7 @@ class preprocess:
         return X_train, y_train, X_test
 
     def get_bagofwords(self, max_features=5000, data_directory='nlp_processed/', clean=False, use_disk=True,
-                       use_spacy=True, ngram_range=(1,1)):
+                       use_spacy=True, ngram_range=(1, 1)):
 
         filename = os.path.join(data_directory, 'data_bow.dat')
 
@@ -108,7 +108,7 @@ class preprocess:
 
                 sp = loaded['use_spacy']
                 max_feat = loaded['max_features']
-                ng_range = loaded['ngram_range']
+                ng_range = tuple(loaded['ngram_range'])
 
                 if sp != use_spacy or max_feat != max_features or ng_range != ngram_range:
                     file.close()
@@ -262,10 +262,14 @@ class preprocess:
 
         parsed = lemmas
 
+        ### TEMP: for test against roman's word list
+        roman_list = open('1-1000.txt','rt').read().split()
+
         # Remove all stop words and other undesirables
         # also make sure not an empty string
         parsed = [token for token in parsed if
-                  (token not in self.STOP_WORDS_PLUS_EXTRA and len(token) != 0)]
+                  #(token not in self.STOP_WORDS_PLUS_EXTRA and len(token) != 0)]
+                  (token not in self.STOP_WORDS_PLUS_EXTRA and len(token) != 0 and token not in roman_list)]
 
         return parsed
 
