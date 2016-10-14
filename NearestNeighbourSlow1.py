@@ -1,5 +1,5 @@
 import numpy as np
-#from numpy import linalg as LA
+from numpy import linalg as LA
 import random
 from util.preprocess import preprocess
 #from scipy import sparse
@@ -157,8 +157,8 @@ pp = preprocess()
 # X_test is test data with features as words
 X_train, y_train, X_test = pp.get_tf_idf(max_features=100, use_spacy=True)
 
-X_train = X_train[0:2216*8]
-y_train = y_train[0:2216*8]
+X_train = X_train[0:2216]
+y_train = y_train[0:2216]
 
 # total number of training examples
 num_tot_train = X_train.shape[0]
@@ -222,9 +222,9 @@ train_ind1, valid_ind1, train_ind2, valid_ind2, train_ind3, valid_ind3, train_in
 
 
 ''' TRAINING ERROR '''
-train_ind = range(num_tot_train)
+#train_ind = range(num_tot_train)
 #print(train_ind)
-valid_ind = range(num_tot_train)
+#valid_ind = range(num_tot_train)
 #print(valid_ind)
 
 
@@ -239,7 +239,10 @@ valid_ind = range(num_tot_train)
 avg_acc = dict()
 stdev_acc = dict()
 
-train_acc = dict()
+avg_train_acc = dict()
+stdev_train_acc = dict()
+
+#train_acc = dict()
 
 for k in k_options:
     print('k =',k)
@@ -261,14 +264,28 @@ for k in k_options:
     stdev_acc[k] = stdev([acc1,acc2,acc3,acc4])    
     
     # training
-    y_pred_train = get_predictions(X_train, X_train, train_ind, valid_ind, k, y_train)
-    train_acc[k] = evaluate(y_pred_train, y_train, 'training')
+    y_pred_train1 = get_predictions(X_train, X_train, train_ind1, train_ind1, k, y_train)
+    train_acc1 = evaluate(y_pred_train1, y_train, 'training1')
     
+    y_pred_train2 = get_predictions(X_train, X_train, train_ind2, train_ind2, k, y_train)
+    train_acc2 = evaluate(y_pred_train2, y_train, 'training2')
+    
+    y_pred_train3 = get_predictions(X_train, X_train, train_ind3, train_ind3, k, y_train)
+    train_acc3 = evaluate(y_pred_train3, y_train, 'training3')
+    
+    y_pred_train4 = get_predictions(X_train, X_train, train_ind4, train_ind4, k, y_train)
+    train_acc4 = evaluate(y_pred_train4, y_train, 'training4')
+    
+    avg_train_acc[k] = mean([train_acc1,train_acc2,train_acc3,train_acc4])
+    stdev_train_acc[k] = stdev([train_acc1,train_acc2,train_acc3,train_acc4])
+        
 
 print('')
 print('average accuracy for each k',avg_acc)
 print('stdev accuracy for each k',stdev_acc)
-print('training accuracy',train_acc)
+#print('training accuracy',train_acc)
+print('average train accuracy for each k',avg_train_acc)
+print('stdev train accuracy for each k',stdev_train_acc)
 
 #optimal_k = max(avg_acc, key=avg_acc.get)
 
