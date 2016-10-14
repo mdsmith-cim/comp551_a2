@@ -8,6 +8,7 @@ from scipy.sparse.linalg import norm
 import math
 from scipy.sparse import csr_matrix
 from statistics import mode, StatisticsError, stdev, mean
+from numpy import inf
 #import random
 #from sklearn.model_selection import train_test_split
 
@@ -80,8 +81,6 @@ def pick_index(k, thelist, index_list, metric, y_train):
 
 
 
-''' COULD TRY DOT PRODUCT AGAIN '''
-
 
 
 def get_predictions(X_train, x_test, train_ind, valid_ind, k, y_train):
@@ -100,7 +99,7 @@ def get_predictions(X_train, x_test, train_ind, valid_ind, k, y_train):
         # validation example is from training set, index v_ind
         test = X_copy[v_ind]
         diff = csr_matrix(X_train.toarray() - test)
-        norms = norm(diff,ord=0,axis=1) # find norm of each row
+        norms = norm(diff,ord=inf,axis=1) # find norm of each row
         
         # norms should no longer be sparse. make list out of it
         norms = norms.tolist()
