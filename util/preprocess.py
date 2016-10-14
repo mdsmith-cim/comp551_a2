@@ -87,7 +87,7 @@ class preprocess:
         return X_train, y_train, X_test
 
     def get_bagofwords(self, max_features=5000, data_directory='nlp_processed/', clean=False, use_disk=True,
-                       use_spacy=True):
+                       use_spacy=True, ngram_range=(1, 1)):
 
         filename = os.path.join(data_directory, 'data_bow.dat')
 
@@ -102,14 +102,15 @@ class preprocess:
 
                 if 'X_train' not in loaded.files or 'X_test' not in loaded.files or 'y_train' not in loaded.files \
                         or 'use_spacy' not in loaded.files or 'max_features' not in loaded.files or \
-                        'uniques' not in loaded.files:
+                        'uniques' not in loaded.files or 'ngram_range' not in loaded.files:
                     file.close()
                     raise Exception('Saved data is corrupted')
 
                 sp = loaded['use_spacy']
                 max_feat = loaded['max_features']
+                ng_range = tuple(loaded['ngram_range'])
 
-                if sp != use_spacy or max_feat != max_features:
+                if sp != use_spacy or max_feat != max_features or ng_range != ngram_range:
                     file.close()
                     raise Exception('Bag of words was calculated using different parameters; not loading data')
 
@@ -139,12 +140,12 @@ class preprocess:
             X_train, y_train, X_test = self.get_data_raw()
             # Bag of words: run on preprocessed data
             vectorizer = CountVectorizer(analyzer="word", strip_accents="unicode", tokenizer=self.process_spacy_sample,
-                                         max_features=max_features)
+                                         max_features=max_features, ngram_range=ngram_range)
         else:
             X_train, y_train, X_test = self.get_data_no_numbers()
             # Bag of words: use scikit-learn built in stop words
             vectorizer = CountVectorizer(analyzer="word", strip_accents="unicode", stop_words="english",
-                                         max_features=max_features)
+                                         max_features=max_features, ngram_range=ngram_range)
 
         X_train = vectorizer.fit_transform(X_train)
         X_test = vectorizer.transform(X_test)
@@ -154,7 +155,7 @@ class preprocess:
         if use_disk:
             file = open(filename, 'wb')
             np.savez_compressed(file, X_train=X_train, X_test=X_test, y_train=y_train, use_spacy=use_spacy,
-                                max_features=max_features, uniques=self.uniques)
+                                max_features=max_features, uniques=self.uniques, ngram_range=ngram_range)
             print("Saved data to " + filename)
             file.close()
 

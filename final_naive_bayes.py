@@ -282,4 +282,3 @@ def string_to_list(dataset):
   #  cats = ['math', 'cs', 'stat', 'physics']
    # for i in pred_fin:
     #    file.write(str(i[0]) + "," + cats[i[1]]+"\n" )
-
