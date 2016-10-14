@@ -157,8 +157,8 @@ pp = preprocess()
 # X_test is test data with features as words
 X_train, y_train, X_test = pp.get_tf_idf(max_features=100, use_spacy=True)
 
-X_train = X_train[0:2216*16]
-y_train = y_train[0:2216*16]
+X_train = X_train[0:2216*8]
+y_train = y_train[0:2216*8]
 
 # total number of training examples
 num_tot_train = X_train.shape[0]
