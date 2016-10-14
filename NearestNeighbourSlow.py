@@ -40,7 +40,7 @@ def evaluate(predictions, test_out, descr):
             tot += 1
         else:
             tot += 1
-    print(descr, 'prediction success', n, tot, n/tot)
+    print(descr, 'accuracy', n, tot, n/tot)
     accuracy = n/tot
     return accuracy
 
@@ -57,18 +57,11 @@ def pick_index(k, thelist, index_list, metric, y_train):
     
     try: # there is a unique mode
         md = mode(class_list)
-#        print('mode',md)
         pred = md
+        
     except StatisticsError: # mode not unique
         
 #        print("There is no mode!")
-        
-        # pick max in thelist
-        if(metric == 'dot'):
-            max_dot = max(thelist)
-            max_dot_index = thelist.index(max_dot)
-            index = index_list[max_dot_index]
-            pred = y_train[index]
         
         if(metric == 'euc'):
             min_euc = min(thelist)
@@ -79,29 +72,26 @@ def pick_index(k, thelist, index_list, metric, y_train):
     return pred
 
 
-
-''' COULD TRY DOT PRODUCT AGAIN '''
-
-
-
 def get_predictions(X_train, x_test, train_ind, valid_ind, k, y_train):
     
     X_copy = X_train
+    
+    # restrict to traning indices
     X_train = X_train[train_ind]
     y_train = y_train[train_ind]
     
     diff = []
     y_pred = dict()
-    
-    count = 1    
-       
+           
     for v_ind in valid_ind:
         
         # validation example is from training set, index v_ind
         test = X_copy[v_ind]
-        diff = csr_matrix(X_train.toarray() - test)
-        norms = norm(diff,axis=1) # find norm of each row
         
+        # get difference between each training example and the test example
+        diff = csr_matrix(X_train.toarray() - test)
+        # find norm of each row
+        norms = norm(diff,axis=1)
         # norms should no longer be sparse. make list out of it
         norms = norms.tolist()
 
@@ -110,10 +100,10 @@ def get_predictions(X_train, x_test, train_ind, valid_ind, k, y_train):
         
         
         # kNN
-        
         k_neigh = []
         neigh_norms = []
         
+        # find k neighbours
         for i in range(k):
 
             # find min norm
@@ -132,10 +122,6 @@ def get_predictions(X_train, x_test, train_ind, valid_ind, k, y_train):
         
         y_pred[v_ind] = pred
         
-        count += 1
-        
-#        if count == 10022:
-#            break
     return y_pred
 
 
@@ -155,28 +141,30 @@ pp = preprocess()
 # X_train is with features as words
 # y_train is classification of X_train
 # X_test is test data with features as words
-X_train, y_train, X_test = pp.get_tf_idf(max_features=5000, use_spacy=True)
+X_train, y_train, X_test = pp.get_tf_idf(max_features=100, use_spacy=True)
 
-#X_train = X_train[0:1000]
-#y_train = y_train[0:1000]
+X_train = X_train[0:1000]
+y_train = y_train[0:1000]
 
 # total number of training examples
 num_tot_train = X_train.shape[0]
 # ratio of training examples to be used for validation
-#valid_ratio = 1/4
+valid_ratio = 1/4
 
 # separate training set into actual training and validation
-#train_ind, valid_ind = data_separation(num_tot_train,valid_ratio)
+# this was random separation for initial testing
+train_ind, valid_ind = data_separation(num_tot_train,valid_ratio)
 
 
 # get the predictions
-#y_pred = get_predictions(X_train, X_train, train_ind, valid_ind, k, y_train)
+y_pred = get_predictions(X_train, X_train, train_ind, valid_ind, k, y_train)
 
 # print out accuracy
-#accuracy = evaluate(y_pred, y_train,'precrossval')
+accuracy = evaluate(y_pred, y_train,'precrossval')
 
 #all training examples and 100 features
 #prediction success 7598 8864 0.8571750902527075
+#k=3
 
     
     
@@ -211,6 +199,14 @@ def crossval_sep(num_tot_train, ratio):
 
 
 
+
+''' FOR TRAINING ERROR '''
+train_ind = range(num_tot_train)
+valid_ind = range(num_tot_train)
+
+
+
+
 ''' CROSS VALIDATION BEGINS '''
 
 k_options = [1,2,3,4,8,16,32]
@@ -221,11 +217,7 @@ train_ind1, valid_ind1, train_ind2, valid_ind2, train_ind3, valid_ind3, train_in
 
 
 
-''' TRAINING ERROR '''
-train_ind = range(num_tot_train)
-#print(train_ind)
-valid_ind = range(num_tot_train)
-#print(valid_ind)
+
 
 
 # loop over k after finding training and validation sets.
@@ -242,20 +234,20 @@ stdev_acc = dict()
 train_acc = dict()
 
 for k in k_options:
-    print('k=',k)
+    print('k =',k)
     
     # validation
     y_pred1 = get_predictions(X_train, X_train, train_ind1, valid_ind1, k, y_train)
-    acc1 = evaluate(y_pred1, y_train, 'fold1')
+    acc1 = evaluate(y_pred1, y_train, 'fold1   ')
     
     y_pred2 = get_predictions(X_train, X_train, train_ind2, valid_ind2, k, y_train)
-    acc2 = evaluate(y_pred2, y_train, 'fold2')
+    acc2 = evaluate(y_pred2, y_train, 'fold2   ')
     
     y_pred3 = get_predictions(X_train, X_train, train_ind3, valid_ind3, k, y_train)
-    acc3 = evaluate(y_pred3, y_train, 'fold3')
+    acc3 = evaluate(y_pred3, y_train, 'fold3   ')
     
     y_pred4 = get_predictions(X_train, X_train, train_ind4, valid_ind4, k, y_train)
-    acc4 = evaluate(y_pred4, y_train, 'fold4')
+    acc4 = evaluate(y_pred4, y_train, 'fold4   ')
     
     avg_acc[k] = mean([acc1,acc2,acc3,acc4])
     stdev_acc[k] = stdev([acc1,acc2,acc3,acc4])    
@@ -272,7 +264,7 @@ print('training accuracy',train_acc)
 
 #optimal_k = max(avg_acc, key=avg_acc.get)
 
-print('\n')
+print('')
 
 
 
